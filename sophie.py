@@ -2,7 +2,15 @@ from __future__ import print_function  # Python 2 compatibility
 from builtins import input  # Python 2 compatibility
 import readline  # For backspace in prompt.
 
-from termcolor import colored
+from analyze import analyze
+
+try:
+    from termcolor import colored
+except ImportError:
+    print("Please install `termcolor`.", 
+        "This can be done with `pip install termcolor`.")
+    def colored(text, *args, **kwargs):
+        return text
 
 
 class Sophie(object):
@@ -16,9 +24,14 @@ class Sophie(object):
 
 
     def converse(self):
+        self.speak("Hi! I'm {}. What's on your mind?".format(self.NAME))
         while True:
             remark = self.listen()
-            response = self.analyze(remark)
+            try:
+                response = self.analyze(remark)
+            except RuntimeError:
+                print("Alrighty then. Bye!")
+                break
             self.speak(response)
         
     def listen(self):
@@ -28,11 +41,8 @@ class Sophie(object):
         print(self._prefix, response)
 
     def analyze(self, remark):
-        return 'You said "{}"!'.format(remark)
-
-
-def main():
-    Sophie().converse()
+        return analyze(remark)
+        
 
 if __name__ == '__main__':
-    main()
+    Sophie().converse()
