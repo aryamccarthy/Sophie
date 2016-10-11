@@ -1,6 +1,7 @@
 from __future__ import print_function  # Python 2 compatibility
 from builtins import input  # Python 2 compatibility
 import readline  # For backspace in prompt.
+from sys import exit
 
 from analyze import analyze
 
@@ -27,21 +28,27 @@ class Sophie(object):
         self.speak("Hi! I'm {}. What's on your mind?".format(self.NAME))
         while True:
             remark = self.listen()
-            try:
-                response = self.analyze(remark)
-            except RuntimeError:
-                self.speak("Alrighty then. Bye!")
-                break
+            response = self.analyze_or_die(remark)
             self.speak(response)
         
     def listen(self):
-        return input(self._prompt)
+        try:
+            return input(self._prompt)
+        except (EOFError, KeyboardInterrupt):  # ctrl-D, ctrl-C
+            print()
+            self.speak("Harsh! Can't you wish me a proper goodbye?")
+            return self.listen()
 
     def speak(self, response):
         print(self._prefix, response)
 
-    def analyze(self, remark):
-        return analyze(remark)
+    def analyze_or_die(self, remark):
+        try:
+            return analyze(remark)
+        except RuntimeError:
+            self.speak("Alrighty then. Bye!")
+            exit()
+
         
 
 if __name__ == '__main__':
