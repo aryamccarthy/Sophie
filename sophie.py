@@ -30,7 +30,7 @@ class Sophie(object):
             try:
                 response = self.analyze(remark)
             except RuntimeError:
-                print("Alrighty then. Bye!")
+                self.speak("Alrighty then. Bye!")
                 break
             self.speak(response)
         
