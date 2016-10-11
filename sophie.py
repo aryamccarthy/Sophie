@@ -1,19 +1,11 @@
 #!/usr/bin/python
 # -*- coding: latin-1 -*-
 from __future__ import print_function
-from subprocess import Popen
 import readline  # For backspace in prompt.
-from sys import exit
 
 from analyze import analyze
-from sendmail import Sendmail
-try:
-    from termcolor import colored
-except ImportError:
-    print("Please install `termcolor`.", 
-        "This can be done with `pip install termcolor`.")
-    def colored(text, *args, **kwargs):
-        return text
+from sendmail import Sendmail  # PyPI's version is not Python3 ready.
+from termcolor import colored
 
 # For Python 2 compatibility:
 try:
@@ -22,51 +14,60 @@ except NameError:
     pass
 
 
-class Sophie(object):
-    """A self-contained conversationalist."""
+NAME = "Sophie"
+PROMPT = colored("You: ", color='red', attrs={"bold"})
+PREFIX = colored("{}:".format(NAME), 'blue', attrs={"bold"})
+conversation = []
 
-    def __init__(self):
-        super(Sophie, self).__init__()
-        self.NAME = "Sophie"
-        self._prompt = colored("You: ", color='red', attrs={"bold"})
-        self._prefix = colored("{}:".format(self.NAME), 'blue', attrs={"bold"})
-        self.conversation = []
 
-    def converse(self):
-        self.speak("Hi! I'm {}. What's on your mind?".format(self.NAME))
-        while True:
-            remark = self.listen()
-            response = self.analyze_or_die(remark)
-            self.speak(response)
-        
-    def listen(self):
-        try:
-            user_input = input(self._prompt)
-            self.conversation.append(user_input)
-            return user_input
-        except (EOFError, KeyboardInterrupt):  # ctrl-D, ctrl-C
-            print()
-            self.speak("Hold on. Why don't we say a proper goodbye?")
-            return self.listen()
+def converse():
+    """Maintains machinery of the conversation."""
+    speak("Hi! I'm {}. What's on your mind?".format(NAME))
+    while True:
+        remark = listen()
+        response = analyze_or_die(remark)
+        speak(response)
 
-    def speak(self, response):
-        print(self._prefix, response)
-        self.conversation.append(response)
 
-    def analyze_or_die(self, remark):
-        try:
-            return analyze(remark)
-        except RuntimeError:
-            self.speak("Alrighty then. Bye!")
-            self.wrap_up()
-            exit()
+def listen():
+    """Let the user tell you what's up."""
+    try:
+        user_input = input(PROMPT)
+        conversation.append(user_input)
+        return user_input
+    except (EOFError, KeyboardInterrupt):  # ctrl-D, ctrl-C
+        print()
+        speak("Hold on. Why don't we say a proper goodbye?")
+        return listen()
 
-    def wrap_up(self):
-        Sendmail().sendmail(from_addr="",
-            to_addrs=["aryadevin@icloud.com"],
-            msg = "\n".join(self.conversation))
 
-        
+def speak(response):
+    """Sophie prints to the console."""
+    print(PREFIX, response)
+    conversation.append(response)
+
+
+def analyze_or_die(remark):
+    """Process the input, or go away if the user wants to quit."""
+    try:
+        return analyze(remark)
+    except RuntimeError:
+        wrap_up()
+
+
+def email_conversation():
+    """Let me see what else Sophie needs to learn."""
+    Sendmail().sendmail(from_addr="",
+                        to_addrs=["aryadevin@icloud.com"],
+                        msg="\n".join(conversation))
+
+
+def wrap_up():
+    """Tear it all down."""
+    speak("Alrighty then. Bye!")
+    email_conversation()
+    exit()
+
 
 if __name__ == '__main__':
-    Sophie().converse()
+    converse()

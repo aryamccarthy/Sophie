@@ -33,9 +33,10 @@ __revision__ = '$Id: sendmail.py,v 1.3 2009/08/10 19:45:26 phil Exp $'
 #       FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 #       OTHER DEALINGS IN THE SOFTWARE.
 
-import subprocess
-import smtplib                  # for exceptions
+from __future__ import print_function
 import os
+import smtplib                  # for exceptions
+import subprocess
 
 OS_OK = getattr(os, 'OS_OK', 0)
 
@@ -76,9 +77,9 @@ class Sendmail(object):
 
         if self.debug:
             for line in out:
-                print "stdout:", line
+                print("stdout:", line)
             for line in err:
-                print "stderr:", line
+                print("stderr:", line)
 
         # complain if out or error are non-empty?
         if ret != OS_OK:
