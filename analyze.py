@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: latin-1 -*-
 from random import choice
 import re
 
@@ -78,7 +80,7 @@ replies = {
         "Do you enjoy being {}?"
     ],
     r"You (.*)": [
-        "We were discussing you—not me.",
+        u"We were discussing you–not me.",
         "Oh, I {}",
         "You're not really talking about me, are you?"
     ],
@@ -194,7 +196,7 @@ replies = {
         "You aren't sure?",
         "Don't you know?"
     ],
-    r"(.*)\bno\b(.*)": [
+    r".*\bno\b.*": [
         "Are you saying that just to be negative?",
         "You are being a bit negative.",
         "Why not?",
@@ -205,7 +207,7 @@ replies = {
         "Are you concerned about my {}?",
         "What about your own {}?"
     ],
-    r".*\balways\b(.*)": [
+    r".*\balways\b.*": [
         "Can you think of a specific example?",
         "When?",
         "What are you thinking of?",
@@ -216,7 +218,7 @@ replies = {
         "But you are not sure you {}",
         "Do you doubt you {}?"
     ],
-    r".*\balike\b(.*)": [
+    r".*\balike\b.*": [
         "In what way?",
         "What resemblance do you see?",
         "What does the similarity suggest to you?",
@@ -237,7 +239,7 @@ replies = {
         "Do you ipose on your friends?",
         "Perhaps your love for friends worries you?"
     ],
-    r"(.*)\bcomputers?\b(.*)": [
+    r".*\bcomputers?\b.*": [
         "Do computers worry you?",
         "Are you talking about me in particular?",
         "Are you frightened by machines?",
@@ -260,7 +262,7 @@ replies = {
         'Why do you say "{0}"?',
         "I see.",
         "Very interesting.",
-        "{0}. Huh.",
+        "So {0}. Huh.",
         "I see. And what does that tell you?",
         "How does that make you feel?",
         "How do you feel when you say that?",
@@ -268,7 +270,7 @@ replies = {
     ]
 }
 
-farewells = {"bye", "goodbye", "shut up", "fuck you", "go away", "exit", "quit"}
+farewells = {"bye", "goodbye", "shut up", "fuck you", "fuck off", "go away", "exit", "quit"}
 
 def translated(span):
     tokens = span.lower().split()
